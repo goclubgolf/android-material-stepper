@@ -25,7 +25,7 @@ public class VerificationError {
     /**
      * A message explaining the cause of the error.
      */
-    private final String mErrorMessage;
+    private String mErrorMessage;
 
     public VerificationError(String errorMessage) {
         this.mErrorMessage = errorMessage;

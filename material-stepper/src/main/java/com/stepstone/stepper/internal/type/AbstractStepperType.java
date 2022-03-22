@@ -19,12 +19,10 @@ package com.stepstone.stepper.internal.type;
 import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
-import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 
 import com.stepstone.stepper.StepperLayout;
-import com.stepstone.stepper.VerificationError;
 import com.stepstone.stepper.adapter.StepAdapter;
 
 import static android.support.annotation.RestrictTo.Scope.LIBRARY;
@@ -57,7 +55,7 @@ public abstract class AbstractStepperType {
 
     final StepperLayout mStepperLayout;
 
-    final SparseArray<VerificationError> mStepErrors = new SparseArray<>();
+    final SparseBooleanArray mStepErrors = new SparseBooleanArray();
 
     public AbstractStepperType(StepperLayout stepperLayout) {
         this.mStepperLayout = stepperLayout;
@@ -73,20 +71,19 @@ public abstract class AbstractStepperType {
     /**
      * Called to set whether the stepPosition has an error or not, changing it's appearance.
      * @param stepPosition the step to set the error
-     * @param error error instance or null if no error
+     * @param hasError whether it has error or not
      */
-    public void setError(int stepPosition, @Nullable VerificationError error) {
-        mStepErrors.put(stepPosition, error);
+    public void setErrorFlag(int stepPosition, boolean hasError) {
+        mStepErrors.put(stepPosition, hasError);
     }
 
     /**
      * Checks if there's an error for the step.
      *
      * @param stepPosition the step to check for error
-     * @return an error for this step or null if no error
+     * @return true if there's an error for this step
      */
-    @Nullable
-    public VerificationError getErrorAtPosition(int stepPosition) {
+    public boolean getErrorAtPosition(int stepPosition) {
         return mStepErrors.get(stepPosition);
     }
 

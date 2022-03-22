@@ -25,27 +25,37 @@ import com.stepstone.stepper.R;
 import com.stepstone.stepper.StepperLayout;
 
 import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+import static com.stepstone.stepper.internal.util.AnimationUtil.ALPHA_HALF;
+import static com.stepstone.stepper.internal.util.AnimationUtil.ALPHA_OPAQUE;
 
 /**
- * Feedback stepper type which displays a progress bar on top of the steps' content.
+ * Feedback stepper type which displays a progress bar on top of the steps' content and partially fades the content out.
  */
 @RestrictTo(LIBRARY)
-public class ContentProgressStepperFeedbackType implements StepperFeedbackType {
+public class ContentStepperFeedbackType implements StepperFeedbackType {
 
-    @NonNull
+    private final View mPager;
+
     private final ProgressBar mPagerProgressBar;
 
-    public ContentProgressStepperFeedbackType(@NonNull StepperLayout stepperLayout) {
-        mPagerProgressBar = (ProgressBar) stepperLayout.findViewById(R.id.ms_stepPagerProgressBar);
+    public ContentStepperFeedbackType(@NonNull StepperLayout stepperLayout) {
+        mPager = stepperLayout.findViewById(R.id.ms_stepPager);
+        mPagerProgressBar = (ProgressBar) stepperLayout.findViewById(R.id.stepPagerProgressBar);
     }
 
     @Override
     public void showProgress(@NonNull String progressMessage) {
         mPagerProgressBar.setVisibility(View.VISIBLE);
+        mPager.animate()
+                .alpha(ALPHA_HALF)
+                .setDuration(PROGRESS_ANIMATION_DURATION);
     }
 
     @Override
     public void hideProgress() {
         mPagerProgressBar.setVisibility(View.GONE);
+        mPager.animate()
+                .alpha(ALPHA_OPAQUE)
+                .setDuration(PROGRESS_ANIMATION_DURATION);
     }
 }

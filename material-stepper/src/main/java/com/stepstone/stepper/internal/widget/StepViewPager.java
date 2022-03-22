@@ -33,8 +33,6 @@ import static android.support.annotation.RestrictTo.Scope.LIBRARY;
 @RestrictTo(LIBRARY)
 public class StepViewPager extends ViewPager {
 
-    private boolean mBlockTouchEventsFromChildrenEnabled;
-
     public StepViewPager(Context context) {
         this(context, null);
     }
@@ -47,19 +45,13 @@ public class StepViewPager extends ViewPager {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         // Never allow swiping to switch between pages
-        return mBlockTouchEventsFromChildrenEnabled;
+        return false;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // Never allow swiping to switch between pages
-        return mBlockTouchEventsFromChildrenEnabled;
+        return false;
     }
 
-    /**
-     * @param blockTouchEventsFromChildrenEnabled true if children should not receive touch events
-     */
-    public void setBlockTouchEventsFromChildrenEnabled(boolean blockTouchEventsFromChildrenEnabled) {
-        this.mBlockTouchEventsFromChildrenEnabled = blockTouchEventsFromChildrenEnabled;
-    }
 }

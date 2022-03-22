@@ -33,7 +33,7 @@ class DelayedTransitionStepperActivity : AppCompatActivity() {
     }
 
     @BindView(R.id.stepperLayout)
-    lateinit var stepperLayout: StepperLayout
+    lateinit var mStepperLayout: StepperLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,18 +42,18 @@ class DelayedTransitionStepperActivity : AppCompatActivity() {
         setContentView(R.layout.activity_delayed_transition)
         ButterKnife.bind(this)
         val startingStepPosition = savedInstanceState?.getInt(CURRENT_STEP_POSITION_KEY) ?: 0
-        stepperLayout.setAdapter(DelayedTransitionFragmentStepAdapter(supportFragmentManager, this), startingStepPosition)
+        mStepperLayout.setAdapter(DelayedTransitionFragmentStepAdapter(supportFragmentManager, this), startingStepPosition)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(CURRENT_STEP_POSITION_KEY, stepperLayout.currentStepPosition)
+        outState.putInt(CURRENT_STEP_POSITION_KEY, mStepperLayout.currentStepPosition)
         super.onSaveInstanceState(outState)
     }
 
     override fun onBackPressed() {
-        val currentStepPosition = stepperLayout.currentStepPosition
+        val currentStepPosition = mStepperLayout.currentStepPosition
         if (currentStepPosition > 0) {
-            stepperLayout.onBackClicked()
+            mStepperLayout.onBackClicked()
         } else {
             finish()
         }

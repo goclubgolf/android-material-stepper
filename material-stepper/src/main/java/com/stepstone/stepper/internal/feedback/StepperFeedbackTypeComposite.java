@@ -31,7 +31,6 @@ import static android.support.annotation.RestrictTo.Scope.LIBRARY;
 @RestrictTo(LIBRARY)
 public class StepperFeedbackTypeComposite implements StepperFeedbackType {
 
-    @NonNull
     private List<StepperFeedbackType> mChildren = new ArrayList<>();
 
     @Override
@@ -52,11 +51,8 @@ public class StepperFeedbackTypeComposite implements StepperFeedbackType {
      * Adds a child component to this composite.
      * @param component child to add
      */
-    public void addComponent(@NonNull StepperFeedbackType component) {
+    public void addComponent(StepperFeedbackType component) {
         mChildren.add(component);
     }
 
-    public List<StepperFeedbackType> getChildComponents() {
-        return mChildren;
-    }
 }

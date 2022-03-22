@@ -17,6 +17,7 @@ limitations under the License.
 package com.stepstone.stepper.internal.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.RestrictTo;
@@ -67,6 +68,19 @@ public class DottedProgressBar extends LinearLayout {
         super(context, attrs, defStyleAttr);
         mSelectedColor = ContextCompat.getColor(context, R.color.ms_selectedColor);
         mUnselectedColor = ContextCompat.getColor(context, R.color.ms_unselectedColor);
+        if (attrs != null) {
+            final TypedArray a = getContext().obtainStyledAttributes(
+                    attrs, R.styleable.DottedProgressBar, defStyleAttr, 0);
+
+            if (a.hasValue(R.styleable.DottedProgressBar_ms_activeDotColor)) {
+                mSelectedColor = a.getColor(R.styleable.DottedProgressBar_ms_activeDotColor, mSelectedColor);
+            }
+            if (a.hasValue(R.styleable.DottedProgressBar_ms_inactiveDotColor)) {
+                mUnselectedColor = a.getColor(R.styleable.DottedProgressBar_ms_inactiveDotColor, mUnselectedColor);
+            }
+
+            a.recycle();
+        }
     }
 
     public void setUnselectedColor(@ColorInt int unselectedColor) {

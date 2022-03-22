@@ -24,12 +24,11 @@ import com.stepstone.stepper.StepperLayout;
 import static android.support.annotation.RestrictTo.Scope.LIBRARY;
 
 /**
- * Feedback stepper type which disables the buttons in the bottom navigation when an operation is in progress.
+ * Feedback stepper type which disabled the buttons in the bottom navigation when an operation is in progress.
  */
 @RestrictTo(LIBRARY)
 public class DisabledBottomNavigationStepperFeedbackType implements StepperFeedbackType {
 
-    @NonNull
     private StepperLayout mStepperLayout;
 
     public DisabledBottomNavigationStepperFeedbackType(@NonNull StepperLayout stepperLayout) {

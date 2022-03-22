@@ -13,8 +13,8 @@ class ShowErrorOnBackTabActivity : AbstractStepperActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        stepperLayout.isShowErrorStateEnabled = true
-        stepperLayout.isShowErrorStateOnBackEnabled = true
+        mStepperLayout.isShowErrorStateEnabled = true
+        mStepperLayout.isShowErrorStateOnBackEnabled = true
     }
 
 }

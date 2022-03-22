@@ -4,6 +4,30 @@ apply plugin: 'maven'
 apply from: '../material-stepper/code_coverage.gradle'
 apply from: '../config/quality/quality.gradle'
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = POM_ARTIFACT_ID
+
+    publishedGroupId = POM_GROUP_ID
+    libraryName = 'Android Material Stepper'
+    artifact = POM_ARTIFACT_ID
+
+    libraryDescription = 'This library allows to use Material steppers inside Android applications.'
+
+    siteUrl = 'https://github.com/stepstone-tech/android-material-stepper'
+    gitUrl = 'https://github.com/stepstone-tech/android-material-stepper.git'
+
+    libraryVersion = POM_VERSION
+
+    developerId = 'zawadz88'
+    developerName = 'Piotr Zawadzki'
+    developerEmail = 'piotr.zawadzki@stepstone.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion project.androidCompileSdkVersion
     buildToolsVersion("$androidBuildToolsVersion")
@@ -12,15 +36,12 @@ android {
         minSdkVersion project.androidMinSdkVersion
         targetSdkVersion project.androidTargetSdkVersion
         vectorDrawables.useSupportLibrary = true
-    }
 
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            testCoverageEnabled true
         }
     }
 
@@ -31,29 +52,26 @@ android {
                 includeNoLocationClasses = true
             }
         }
-        //fixes https://github.com/robolectric/robolectric/issues/3169#issuecomment-312046322
-        unitTests.includeAndroidResources = true
     }
 
     lintOptions {
         warningsAsErrors true
-        disable 'RequiredSize', 'ClickableViewAccessibility'
     }
 }
 
 dependencies {
-    api "com.android.support:appcompat-v7:$androidSupportLibraryVersion"
+    compile "com.android.support:appcompat-v7:$androidSupportLibraryVersion"
 
-    testImplementation "junit:junit:$junitVersion"
-    testImplementation "org.mockito:mockito-core:$mockitoVersion"
-    testImplementation "com.squareup.assertj:assertj-android:$assertjVersion"
-    testImplementation("org.robolectric:robolectric:$robolectricVersion") {
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testCompile "com.squareup.assertj:assertj-android:$assertjVersion"
+    testCompile("org.robolectric:robolectric:$robolectricVersion") {
         exclude group: 'commons-logging', module: 'commons-logging'
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-    testImplementation "com.nhaarman:mockito-kotlin:$mockitoKotlinVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    testCompile "com.nhaarman:mockito-kotlin:$mockitoKotlinVersion"
 }
 
 gradle.taskGraph.beforeTask { Task task ->
@@ -67,17 +85,11 @@ gradle.taskGraph.beforeTask { Task task ->
 }
 
 // Log out test results to console
-tasks.matching { it instanceof Test}.all {
+tasks.matching { it instanceof Test }.all {
     testLogging.events = ["failed", "passed", "skipped"]
 }
 
-task ('checkWithCoverage') {
-    dependsOn 'checkstyle', 'findbugs', 'pmd', 'jacocoTestReport', 'lintDebug'
-}
-
-ext {
-    artifact = POM_ARTIFACT_ID
-}
+check.dependsOn 'checkstyle', 'findbugs', 'pmd', 'jacocoTestReport'
 
 apply from: '../installv1.gradle'
 apply from: '../bintrayv1.gradle'

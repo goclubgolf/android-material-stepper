@@ -17,7 +17,6 @@ limitations under the License.
 package com.stepstone.stepper.internal.widget;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -25,13 +24,9 @@ import android.os.Build;
 import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
-import android.support.annotation.VisibleForTesting;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
-import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,8 +37,6 @@ import android.widget.TextView;
 
 import com.stepstone.stepper.R;
 import com.stepstone.stepper.StepperLayout;
-import com.stepstone.stepper.VerificationError;
-import com.stepstone.stepper.internal.util.ObjectsCompat;
 
 import static android.support.annotation.RestrictTo.Scope.LIBRARY;
 
@@ -57,40 +50,11 @@ public class StepTab extends RelativeLayout {
 
     private static final float ALPHA_INACTIVE_STEP_TITLE = 0.54f;
 
-    private static final float ALPHA_ACTIVE_STEP_TITLE = 0.87f;
-
     private static final float ALPHA_OPAQUE = 1.0f;
 
     private static final float HALF_SIZE_SCALE = 0.5f;
 
     private static final float FULL_SIZE_SCALE = 1.0f;
-
-    @VisibleForTesting
-    final TextView mStepNumberTextView;
-
-    @VisibleForTesting
-    final View mStepDivider;
-
-    @VisibleForTesting
-    final TextView mStepTitleTextView;
-
-    @VisibleForTesting
-    final TextView mStepSubtitleTextView;
-
-    @VisibleForTesting
-    final ImageView mStepDoneIndicator;
-
-    @VisibleForTesting
-    final ImageView mStepIconBackground;
-
-    @VisibleForTesting
-    CharSequence mSubtitle;
-
-    /**
-     * Current UI state of the tab. See {@link AbstractState} for more details.
-     */
-    @VisibleForTesting
-    AbstractState mCurrentState = new InactiveNumberState();
 
     @ColorInt
     private int mUnselectedColor;
@@ -104,12 +68,24 @@ public class StepTab extends RelativeLayout {
     @ColorInt
     private int mTitleColor;
 
-    @ColorInt
-    private int mSubtitleColor;
+    private final TextView mStepNumber;
+
+    private final View mStepDivider;
+
+    private final TextView mStepTitle;
+
+    private final ImageView mStepDoneIndicator;
+
+    private final ImageView mStepIconBackground;
 
     private Typeface mNormalTypeface;
 
     private Typeface mBoldTypeface;
+
+    /**
+     * Current UI state of the tab. See {@link AbstractState} for more details.
+     */
+    private AbstractState mCurrentState = new InactiveNumberState();
 
     private AccelerateInterpolator mAccelerateInterpolator = new AccelerateInterpolator();
 
@@ -129,17 +105,15 @@ public class StepTab extends RelativeLayout {
         mUnselectedColor = ContextCompat.getColor(context, R.color.ms_unselectedColor);
         mErrorColor = ContextCompat.getColor(context, R.color.ms_errorColor);
 
-        mStepNumberTextView = (TextView) findViewById(R.id.ms_stepNumber);
+        mStepNumber = (TextView) findViewById(R.id.ms_stepNumber);
         mStepDoneIndicator = (ImageView) findViewById(R.id.ms_stepDoneIndicator);
         mStepIconBackground = (ImageView) findViewById(R.id.ms_stepIconBackground);
         mStepDivider = findViewById(R.id.ms_stepDivider);
-        mStepTitleTextView = (TextView) findViewById(R.id.ms_stepTitle);
-        mStepSubtitleTextView = (TextView) findViewById(R.id.ms_stepSubtitle);
+        mStepTitle = ((TextView) findViewById(R.id.ms_stepTitle));
 
-        mTitleColor = mStepTitleTextView.getCurrentTextColor();
-        mSubtitleColor = mStepSubtitleTextView.getCurrentTextColor();
+        mTitleColor = mStepTitle.getCurrentTextColor();
 
-        Typeface typeface = mStepTitleTextView.getTypeface();
+        Typeface typeface = mStepTitle.getTypeface();
         mNormalTypeface = Typeface.create(typeface, Typeface.NORMAL);
         mBoldTypeface = Typeface.create(typeface, Typeface.BOLD);
         Drawable avd = createCircleToWarningDrawable();
@@ -157,17 +131,17 @@ public class StepTab extends RelativeLayout {
 
     /**
      * Updates the UI state of the tab and sets {@link #mCurrentState} based on the arguments.
-     *  @param error   not null if an error/warning should be shown, null if not an error
+     *
+     * @param error   <code>true</code> if an error/warning should be shown, if <code>true</code> a warning will be shown
      * @param done    true the step was completed, if warning is not shown and this is <code>true</code> a done indicator will be shown
      * @param current true if this is the currently selected step
-     * @param showErrorMessageEnabled true if an error message below step title should appear when an error occurs
      */
-    public void updateState(@Nullable final VerificationError error, final boolean done, final boolean current, boolean showErrorMessageEnabled) {
+    public void updateState(final boolean error, final boolean done, final boolean current) {
         // FIXME: 05/03/2017 stop tabs from changing positions due to changing font type (does not happen e.g. on API 16, investigate further)
-        mStepTitleTextView.setTypeface(current ? mBoldTypeface : mNormalTypeface);
+        mStepTitle.setTypeface(current ? mBoldTypeface : mNormalTypeface);
 
-        if (error != null) {
-            mCurrentState.changeToWarning(showErrorMessageEnabled ? error.getErrorMessage() : null);
+        if (error) {
+            mCurrentState.changeToWarning();
         } else if (done) {
             mCurrentState.changeToDone();
         } else if (current) {
@@ -183,17 +157,7 @@ public class StepTab extends RelativeLayout {
      * @param title step name
      */
     public void setStepTitle(CharSequence title) {
-        mStepTitleTextView.setText(title);
-    }
-
-    /**
-     * Sets the optional step description. This will be displayed below step title unless it's empty or an error message is set.
-     *
-     * @param subtitle optional step description
-     */
-    public void setStepSubtitle(CharSequence subtitle) {
-        this.mSubtitle = subtitle;
-        updateSubtitle(subtitle);
+        mStepTitle.setText(title);
     }
 
     /**
@@ -202,7 +166,7 @@ public class StepTab extends RelativeLayout {
      * @param number step position
      */
     public void setStepNumber(CharSequence number) {
-        mStepNumberTextView.setText(number);
+        mStepNumber.setText(number);
     }
 
     public void setUnselectedColor(int unselectedColor) {
@@ -232,29 +196,19 @@ public class StepTab extends RelativeLayout {
     }
 
     /**
-     * Inflates an animated vector drawable.
+     * Inflates an animated vector drawable. On Lollipop+ this uses the native {@link android.graphics.drawable.AnimatedVectorDrawable}
+     * and below it inflates the drawable as a {@link AnimatedVectorDrawableCompat}.
      *
      * @param animatedVectorDrawableResId resource ID for the animated vector
      * @return animated vector drawable
      */
     public Drawable createAnimatedVectorDrawable(@DrawableRes int animatedVectorDrawableResId) {
-        return AnimatedVectorDrawableCompat.create(getContext(), animatedVectorDrawableResId);
-    }
-
-    private void updateSubtitle(@Nullable CharSequence newSubtitle) {
-        if (ObjectsCompat.equals(newSubtitle, mStepSubtitleTextView.getText())) {
-            return;
-        }
-
-        //Do not hide the subtitle if error message is empty
-        if (!TextUtils.isEmpty(mSubtitle) && TextUtils.isEmpty(newSubtitle)) {
-            newSubtitle = mSubtitle;
-        }
-
-        mStepSubtitleTextView.setText(newSubtitle);
-        mStepSubtitleTextView.setVisibility(!TextUtils.isEmpty(newSubtitle) ? VISIBLE : GONE);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            TransitionManager.beginDelayedTransition(this);
+        Context context = getContext();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Drawable drawable = context.getDrawable(animatedVectorDrawableResId);
+            return drawable.getConstantState().newDrawable(context.getResources());
+        } else {
+            return AnimatedVectorDrawableCompat.create(context, animatedVectorDrawableResId);
         }
     }
 
@@ -271,159 +225,144 @@ public class StepTab extends RelativeLayout {
      * or <code>ms_showErrorStateEnabled</code> was set to <i>true</i>)</li>
      * </ul>
      */
-    @VisibleForTesting
-    abstract class AbstractState {
+    private abstract class AbstractState {
 
         @CallSuper
         protected void changeToInactiveNumber() {
-            updateSubtitle(mSubtitle);
             StepTab.this.mCurrentState = new InactiveNumberState();
         }
 
         @CallSuper
         protected void changeToActiveNumber() {
-            updateSubtitle(mSubtitle);
             StepTab.this.mCurrentState = new ActiveNumberState();
         }
 
         @CallSuper
         protected void changeToDone() {
-            updateSubtitle(mSubtitle);
             StepTab.this.mCurrentState = new DoneState();
         }
 
         @CallSuper
-        protected void changeToWarning(@Nullable CharSequence errorMessage) {
+        protected void changeToWarning() {
             mStepDoneIndicator.setVisibility(View.GONE);
-            mStepNumberTextView.setVisibility(View.GONE);
-            mStepIconBackground.setColorFilter(mErrorColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setTextColor(mErrorColor);
-            mStepSubtitleTextView.setTextColor(mErrorColor);
-            updateSubtitle(errorMessage);
+            mStepNumber.setVisibility(View.GONE);
+            mStepIconBackground.setColorFilter(mErrorColor);
+            mStepTitle.setTextColor(mErrorColor);
             StepTab.this.mCurrentState = new WarningState();
         }
     }
 
-    @VisibleForTesting
-    abstract class AbstractNumberState extends AbstractState {
+    private abstract class AbstractNumberState extends AbstractState {
 
         @Override
         @CallSuper
-        protected void changeToWarning(@Nullable CharSequence errorMessage) {
+        protected void changeToWarning() {
             Drawable avd = createCircleToWarningDrawable();
             mStepIconBackground.setImageDrawable(avd);
             ((Animatable) avd).start();
-            super.changeToWarning(errorMessage);
+            super.changeToWarning();
         }
 
         @Override
         @CallSuper
         protected void changeToDone() {
             mStepDoneIndicator.setVisibility(VISIBLE);
-            mStepNumberTextView.setVisibility(GONE);
+            mStepNumber.setVisibility(GONE);
             super.changeToDone();
         }
 
     }
 
-    @VisibleForTesting
-    class InactiveNumberState extends AbstractNumberState {
+    private class InactiveNumberState extends AbstractNumberState {
 
         @Override
         protected void changeToInactiveNumber() {
-            mStepIconBackground.setColorFilter(mUnselectedColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setTextColor(mTitleColor);
-            mStepTitleTextView.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
-            mStepSubtitleTextView.setTextColor(mSubtitleColor);
+            mStepIconBackground.setColorFilter(mUnselectedColor);
+            mStepTitle.setTextColor(mTitleColor);
+            mStepTitle.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
             super.changeToInactiveNumber();
         }
 
         @Override
         protected void changeToActiveNumber() {
-            mStepIconBackground.setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setAlpha(ALPHA_ACTIVE_STEP_TITLE);
+            mStepIconBackground.setColorFilter(mSelectedColor);
+            mStepTitle.setAlpha(ALPHA_OPAQUE);
             super.changeToActiveNumber();
         }
 
         @Override
         protected void changeToDone() {
             mStepIconBackground.setColorFilter(mSelectedColor);
-            mStepTitleTextView.setAlpha(ALPHA_ACTIVE_STEP_TITLE);
+            mStepTitle.setAlpha(ALPHA_OPAQUE);
             super.changeToDone();
         }
     }
 
-    @VisibleForTesting
-    class ActiveNumberState extends AbstractNumberState {
+    private class ActiveNumberState extends AbstractNumberState {
 
         @Override
         protected void changeToInactiveNumber() {
-            mStepIconBackground.setColorFilter(mUnselectedColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
+            mStepIconBackground.setColorFilter(mUnselectedColor);
+            mStepTitle.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
             super.changeToInactiveNumber();
         }
     }
 
-    @VisibleForTesting
-    class DoneState extends AbstractState {
+    private class DoneState extends AbstractState {
 
         @Override
         protected void changeToInactiveNumber() {
             mStepDoneIndicator.setVisibility(GONE);
-            mStepNumberTextView.setVisibility(VISIBLE);
-            mStepIconBackground.setColorFilter(mUnselectedColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
+            mStepNumber.setVisibility(VISIBLE);
+            mStepIconBackground.setColorFilter(mUnselectedColor);
+            mStepTitle.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
             super.changeToInactiveNumber();
         }
 
         @Override
         protected void changeToActiveNumber() {
             mStepDoneIndicator.setVisibility(GONE);
-            mStepNumberTextView.setVisibility(VISIBLE);
+            mStepNumber.setVisibility(VISIBLE);
             super.changeToActiveNumber();
         }
 
         @Override
-        protected void changeToWarning(@Nullable CharSequence errorMessage) {
+        protected void changeToWarning() {
             Drawable avd = createCircleToWarningDrawable();
             mStepIconBackground.setImageDrawable(avd);
             ((Animatable) avd).start();
-            super.changeToWarning(errorMessage);
+            super.changeToWarning();
         }
     }
 
-    @VisibleForTesting
-    class WarningState extends AbstractState {
+    private class WarningState extends AbstractState {
 
         @Override
         protected void changeToDone() {
             animateViewIn(mStepDoneIndicator);
 
-            mStepIconBackground.setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setTextColor(mTitleColor);
-            mStepSubtitleTextView.setTextColor(mSubtitleColor);
+            mStepIconBackground.setColorFilter(mSelectedColor);
+            mStepTitle.setTextColor(mTitleColor);
             super.changeToDone();
         }
 
         @Override
         protected void changeToInactiveNumber() {
-            animateViewIn(mStepNumberTextView);
+            animateViewIn(mStepNumber);
 
-            mStepIconBackground.setColorFilter(mUnselectedColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setTextColor(mTitleColor);
-            mStepTitleTextView.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
-            mStepSubtitleTextView.setTextColor(mSubtitleColor);
+            mStepIconBackground.setColorFilter(mUnselectedColor);
+            mStepTitle.setTextColor(mTitleColor);
+            mStepTitle.setAlpha(ALPHA_INACTIVE_STEP_TITLE);
 
             super.changeToInactiveNumber();
         }
 
         @Override
         protected void changeToActiveNumber() {
-            animateViewIn(mStepNumberTextView);
+            animateViewIn(mStepNumber);
 
-            mStepIconBackground.setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
-            mStepTitleTextView.setTextColor(mTitleColor);
-            mStepSubtitleTextView.setTextColor(mSubtitleColor);
+            mStepIconBackground.setColorFilter(mSelectedColor);
+            mStepTitle.setTextColor(mTitleColor);
             super.changeToActiveNumber();
         }
 

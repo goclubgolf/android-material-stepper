@@ -68,6 +68,8 @@ limitations under the License.
     <style name="MSStepTabContainer">
         <item name="android:layout_height">@dimen/ms_step_tab_height</item>
         <item name="android:layout_width">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/ms_step_tab_vertical_padding</item>
+        <item name="android:paddingTop">@dimen/ms_step_tab_vertical_padding</item>
     </style>
 
     <style name="MSStepTabNumber">
@@ -93,15 +95,8 @@ limitations under the License.
     <style name="MSStepTabTitle" tools:ignore="NewApi">
         <item name="android:layout_marginLeft">@dimen/ms_step_tab_text_lateral_padding</item>
         <item name="android:layout_marginStart">@dimen/ms_step_tab_text_lateral_padding</item>
-        <item name="android:textColor">@color/ms_black</item><!-- Text alpha is changed in StepTab. 87% for active and 38% for inactive-->
+        <item name="android:textColor">@color/ms_black</item>
         <item name="android:textSize">@dimen/ms_step_tab_title_font_size</item>
-    </style>
-
-    <style name="MSStepTabSubtitle" tools:ignore="NewApi">
-        <item name="android:layout_marginLeft">@dimen/ms_step_tab_text_lateral_padding</item>
-        <item name="android:layout_marginStart">@dimen/ms_step_tab_text_lateral_padding</item>
-        <item name="android:textColor">@color/ms_black_38_opacity</item>
-        <item name="android:textSize">@dimen/ms_step_tab_subtitle_font_size</item>
     </style>
 
     <style name="MSStepTabDivider">
@@ -130,10 +125,6 @@ limitations under the License.
         <item name="android:layout_gravity">center</item>
     </style>
 
-    <style name="MSStepPagerOverlayStyle">
-        <item name="android:background">@color/ms_defaultContentOverlayColor</item>
-    </style>
-
     <style name="MSDefaultStepperLayoutTheme">
         <item name="ms_tabsContainerStyle">@style/MSStepTabsContainer</item>
         <item name="ms_bottomNavigationStyle">@style/MSBottomNavigation</item>
@@ -142,7 +133,6 @@ limitations under the License.
         <item name="ms_completeNavigationButtonStyle">@style/MSNavBarButton.Complete</item>
         <item name="ms_colorableProgressBarStyle">@style/MSColorableProgressBar</item>
         <item name="ms_stepPagerProgressBarStyle">@style/MSStepPagerProgressBarStyle</item>
-        <item name="ms_stepPagerOverlayStyle">@style/MSStepPagerOverlayStyle</item>
 
         <item name="ms_stepTabsScrollViewStyle">@style/MSStepTabsScrollView</item>
         <item name="ms_stepTabsInnerContainerStyle">@style/MSStepTabsInnerContainer</item>
@@ -153,7 +143,6 @@ limitations under the License.
         <item name="ms_stepTabDoneIndicatorStyle">@style/MSStepTabDoneIndicator</item>
         <item name="ms_stepTabIconBackgroundStyle">@style/MSStepTabIconBackground</item>
         <item name="ms_stepTabTitleStyle">@style/MSStepTabTitle</item>
-        <item name="ms_stepTabSubtitleStyle">@style/MSStepTabSubtitle</item>
         <item name="ms_stepTabDividerStyle">@style/MSStepTabDivider</item>
         <item name="ms_stepTabsProgressMessageStyle">@style/MSStepTabsProgressMessage</item>
     </style>

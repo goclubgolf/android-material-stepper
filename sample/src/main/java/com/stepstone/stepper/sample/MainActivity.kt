@@ -60,11 +60,9 @@ class MainActivity : AppCompatActivity() {
                 SampleItem(getString(R.string.styled_progress_bar), getString(R.string.styled_progress_bar_description), StyledProgressBarActivity::class.java),
                 SampleItem(getString(R.string.default_tabs), getString(R.string.default_tabs_description), DefaultTabsActivity::class.java),
                 SampleItem(getString(R.string.styled_tabs), getString(R.string.styled_tabs_description), StyledTabsActivity::class.java),
-                SampleItem(getString(R.string.default_none), getString(R.string.default_none_description), DefaultNoneActivity::class.java),
                 SampleItem(getString(R.string.error_tabs), getString(R.string.error_tabs_description), ShowErrorTabActivity::class.java),
                 SampleItem(getString(R.string.error_color_tabs), getString(R.string.error_color_tabs_description), ShowErrorCustomColorTabActivity::class.java),
                 SampleItem(getString(R.string.error_back_tabs), getString(R.string.error_back_tabs_description), ShowErrorOnBackTabActivity::class.java),
-                SampleItem(getString(R.string.error_with_message_tabs), getString(R.string.error_with_message_tabs_description), ShowErrorWithMessageTabActivity::class.java),
                 SampleItem(getString(R.string.combination), getString(R.string.combination_description), CombinationActivity::class.java),
                 SampleItem(getString(R.string.custom_page_transformer), getString(R.string.custom_page_transformer_description), CustomPageTransformerActivity::class.java),
                 SampleItem(getString(R.string.delayed_transition), getString(R.string.delayed_transition_description), DelayedTransitionStepperActivity::class.java),
@@ -76,8 +74,7 @@ class MainActivity : AppCompatActivity() {
                 SampleItem(getString(R.string.passing_data_between_steps), getString(R.string.passing_data_between_steps_description), PassDataBetweenStepsActivity::class.java),
                 SampleItem(getString(R.string.disabled_tab_navigation), getString(R.string.disabled_tab_navigation_description), DisabledTabNavigationActivity::class.java),
                 SampleItem(getString(R.string.hidden_bottom_navigation), getString(R.string.hidden_bottom_navigation_description), HiddenBottomNavigationActivity::class.java),
-                SampleItem(getString(R.string.custom_stepperlayout_theme), getString(R.string.custom_stepperlayout_theme_description), CustomStepperLayoutThemeActivity::class.java),
-                SampleItem(getString(R.string.set_button_color_programmatically), getString(R.string.set_button_color_programmatically_description), SetButtonColorProgrammaticallyActivity::class.java)
+                SampleItem(getString(R.string.custom_stepperlayout_theme), getString(R.string.custom_stepperlayout_theme_description), CustomStepperLayoutThemeActivity::class.java)
         )
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SampleItemViewHolder {

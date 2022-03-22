@@ -36,7 +36,7 @@ class ProceedProgrammaticallyActivity : AppCompatActivity(), StepperLayout.Stepp
     }
 
     @BindView(R.id.stepperLayout)
-    lateinit var stepperLayout: StepperLayout
+    lateinit var mStepperLayout: StepperLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,19 +45,19 @@ class ProceedProgrammaticallyActivity : AppCompatActivity(), StepperLayout.Stepp
         setContentView(R.layout.activity_default_dots)
         ButterKnife.bind(this)
         val startingStepPosition = savedInstanceState?.getInt(CURRENT_STEP_POSITION_KEY) ?: 0
-        stepperLayout.setAdapter(FormFragmentStepAdapter(supportFragmentManager, this), startingStepPosition)
-        stepperLayout.setListener(this)
+        mStepperLayout.setAdapter(FormFragmentStepAdapter(supportFragmentManager, this), startingStepPosition)
+        mStepperLayout.setListener(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(CURRENT_STEP_POSITION_KEY, stepperLayout.currentStepPosition)
+        outState.putInt(CURRENT_STEP_POSITION_KEY, mStepperLayout.currentStepPosition)
         super.onSaveInstanceState(outState)
     }
 
     override fun onBackPressed() {
-        val currentStepPosition = stepperLayout.currentStepPosition
+        val currentStepPosition = mStepperLayout.currentStepPosition
         if (currentStepPosition > 0) {
-            stepperLayout.onBackClicked()
+            mStepperLayout.onBackClicked()
         } else {
             finish()
         }
@@ -74,6 +74,6 @@ class ProceedProgrammaticallyActivity : AppCompatActivity(), StepperLayout.Stepp
     override fun onReturn() {}
 
     override fun onProceed() {
-        stepperLayout.proceed()
+        mStepperLayout.proceed()
     }
 }

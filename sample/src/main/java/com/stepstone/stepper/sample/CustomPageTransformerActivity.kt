@@ -27,7 +27,7 @@ class CustomPageTransformerActivity : AbstractStepperActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        stepperLayout.setPageTransformer(CrossFadePageTransformer())
+        mStepperLayout.setPageTransformer(CrossFadePageTransformer())
     }
 
     private class CrossFadePageTransformer : ViewPager.PageTransformer {

@@ -16,6 +16,7 @@ limitations under the License.
 
 package com.stepstone.stepper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -24,7 +25,6 @@ import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,7 +43,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.stepstone.stepper.adapter.StepAdapter;
 import com.stepstone.stepper.internal.feedback.StepperFeedbackType;
@@ -172,27 +171,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
     }
 
-    private class OnBackClickListener implements OnClickListener {
-        @Override
-        public void onClick(View v) {
-            onBackClicked();
-        }
-    }
-
-    private class OnNextClickListener implements OnClickListener {
-        @Override
-        public void onClick(View v) {
-            onNext();
-        }
-    }
-
-    private class OnCompleteClickListener implements OnClickListener {
-        @Override
-        public void onClick(View v) {
-            onComplete();
-        }
-    }
-
     private ViewPager mPager;
 
     private Button mBackNavigationButton;
@@ -258,19 +236,11 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
     private StepperFeedbackType mStepperFeedbackType;
 
-    @FloatRange(from = 0.0f, to = 1.0f)
-    private float mContentFadeAlpha = AnimationUtil.ALPHA_HALF;
-
-    @DrawableRes
-    private int mContentOverlayBackground;
-
     private int mCurrentStepPosition;
 
     private boolean mShowErrorStateEnabled;
 
     private boolean mShowErrorStateOnBackEnabled;
-
-    private boolean mShowErrorMessageEnabled;
 
     private boolean mTabNavigationEnabled;
 
@@ -281,6 +251,27 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
     @NonNull
     private StepperListener mListener = StepperListener.NULL;
+
+    private OnClickListener mOnBackClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onBackClicked();
+        }
+    };
+
+    private OnClickListener mOnNextClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onNext();
+        }
+    };
+
+    private OnClickListener mOnCompleteClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onComplete();
+        }
+    };
 
     public StepperLayout(Context context) {
         this(context, null);
@@ -309,7 +300,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
     /**
      * Getter for mStepAdapter
-     *
      * @return mStepAdapter
      */
     public StepAdapter getAdapter() {
@@ -355,6 +345,7 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
      * If you're supporting RTL make sure your {@link android.support.v4.view.ViewPager.PageTransformer} accounts for it.
      *
      * @param pageTransformer new page transformer
+     *
      * @see com.stepstone.stepper.internal.widget.StepViewPager
      * @see com.stepstone.stepper.internal.widget.pagetransformer.StepPageTransformerFactory
      */
@@ -366,8 +357,16 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
         return mSelectedColor;
     }
 
+    public void setSelectedColor(int selectedcolor){
+        this.mSelectedColor = selectedcolor;
+    }
+
     public int getUnselectedColor() {
         return mUnselectedColor;
+    }
+
+    public void setUnSelectedColor(int unselectedcolor){
+        this.mUnselectedColor = unselectedcolor;
     }
 
     public int getErrorColor() {
@@ -421,7 +420,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     /**
      * Sets the current step to the one at the provided index.
      * This does not verify the current step.
-     *
      * @param currentStepPosition new current step position
      */
     public void setCurrentStepPosition(int currentStepPosition) {
@@ -447,7 +445,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
      * Sets whether the Next button in the bottom navigation bar should be in the
      * 'verification failed' state i.e. still clickable but with an option to display it
      * differently to indicate to the user that he cannot go to the next step yet.
-     *
      * @param verificationFailed false if verification failed, true otherwise
      */
     public void setNextButtonVerificationFailed(boolean verificationFailed) {
@@ -458,7 +455,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
      * Sets whether the Complete button in the bottom navigation bar should be in the
      * 'verification failed' state i.e. still clickable but with an option to display it
      * differently to indicate to the user that he cannot finish the process yet.
-     *
      * @param verificationFailed false if verification failed, true otherwise
      */
     public void setCompleteButtonVerificationFailed(boolean verificationFailed) {
@@ -468,7 +464,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     /**
      * Sets whether the Next button in the bottom navigation bar should be enabled (clickable).
      * setting this to <i>false</i> will make it unclickable.
-     *
      * @param enabled true if the button should be clickable, false otherwise
      */
     public void setNextButtonEnabled(boolean enabled) {
@@ -478,7 +473,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     /**
      * Sets whether the Complete button in the bottom navigation bar should be enabled (clickable).
      * setting this to <i>false</i> will make it unclickable.
-     *
      * @param enabled true if the button should be clickable, false otherwise
      */
     public void setCompleteButtonEnabled(boolean enabled) {
@@ -488,7 +482,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     /**
      * Sets whether the Back button in the bottom navigation bar should be enabled (clickable).
      * setting this to <i>false</i> will make it unclickable.
-     *
      * @param enabled true if the button should be clickable, false otherwise
      */
     public void setBackButtonEnabled(boolean enabled) {
@@ -498,7 +491,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     /**
      * Set whether the bottom navigation bar (with Back/Next/Complete buttons) should be visible.
      * <i>true</i> by default.
-     *
      * @param showBottomNavigation true if bottom navigation should be visible, false otherwise
      */
     public void setShowBottomNavigation(boolean showBottomNavigation) {
@@ -560,22 +552,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     }
 
     /**
-     * Set whether an error message below step title should appear when an error occurs
-     *
-     * @param showErrorMessageEnabled true if an error message below step title should appear when an error occurs
-     */
-    public void setShowErrorMessageEnabled(boolean showErrorMessageEnabled) {
-        this.mShowErrorMessageEnabled = showErrorMessageEnabled;
-    }
-
-    /**
-     * @return true if an error message below step title should appear when an error occurs
-     */
-    public boolean isShowErrorMessageEnabled() {
-        return mShowErrorMessageEnabled;
-    }
-
-    /**
      * @return true if step navigation is possible by clicking on the tabs directly, false otherwise
      */
     public boolean isTabNavigationEnabled() {
@@ -584,7 +560,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
     /**
      * Sets whether step navigation is possible by clicking on the tabs directly. Only applicable for 'tabs' type.
-     *
      * @param tabNavigationEnabled true if step navigation is possible by clicking on the tabs directly, false otherwise
      */
     public void setTabNavigationEnabled(boolean tabNavigationEnabled) {
@@ -592,72 +567,14 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     }
 
     /**
-     * Changes the text and compound drawable color of the Next bottom navigation button.
-     *
-     * @param newButtonColor new color state list
-     */
-    public void setNextButtonColor(@NonNull ColorStateList newButtonColor) {
-        mNextButtonColor = newButtonColor;
-        TintUtil.tintTextView(mNextNavigationButton, mNextButtonColor);
-    }
-
-    /**
-     * Changes the text and compound drawable color of the Complete bottom navigation button.
-     *
-     * @param newButtonColor new color state list
-     */
-    public void setCompleteButtonColor(@NonNull ColorStateList newButtonColor) {
-        mCompleteButtonColor = newButtonColor;
-        TintUtil.tintTextView(mCompleteNavigationButton, mCompleteButtonColor);
-    }
-
-    /**
-     * Changes the text and compound drawable color of the Back bottom navigation button.
-     *
-     * @param newButtonColor new color state list
-     */
-    public void setBackButtonColor(@NonNull ColorStateList newButtonColor) {
-        mBackButtonColor = newButtonColor;
-        TintUtil.tintTextView(mBackNavigationButton, mBackButtonColor);
-    }
-
-    /**
-     * Changes the text and compound drawable color of the Next bottom navigation button.
-     *
-     * @param newButtonColor new color int
-     */
-    public void setNextButtonColor(@ColorInt int newButtonColor) {
-        setNextButtonColor(ColorStateList.valueOf(newButtonColor));
-    }
-
-    /**
-     * Changes the text and compound drawable color of the Complete bottom navigation button.
-     *
-     * @param newButtonColor new color int
-     */
-    public void setCompleteButtonColor(@ColorInt int newButtonColor) {
-        setCompleteButtonColor(ColorStateList.valueOf(newButtonColor));
-    }
-
-    /**
-     * Changes the text and compound drawable color of the Back bottom navigation button.
-     *
-     * @param newButtonColor new color int
-     */
-    public void setBackButtonColor(@ColorInt int newButtonColor) {
-        setBackButtonColor(ColorStateList.valueOf(newButtonColor));
-    }
-
-    /**
      * Updates the error state in the UI.
      * It does nothing if showing error state is disabled.
      * This is used internally to show the error on tabs.
-     *
-     * @param error not null if error should be shown, null otherwise
+     * @param hasError true if error should be shown, false otherwise
      * @see #setShowErrorStateEnabled(boolean)
      */
-    public void updateErrorState(@Nullable VerificationError error) {
-        updateError(error);
+    public void updateErrorState(boolean hasError) {
+        updateErrorFlag(hasError);
         if (mShowErrorStateEnabled) {
             invalidateCurrentPosition();
         }
@@ -675,9 +592,12 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
         mPager.setOffscreenPageLimit(limit);
     }
 
+    public void updateErrorFlag(boolean hasError) {
+        mStepperType.setErrorFlag(mCurrentStepPosition, hasError);
+    }
+
     /**
      * Shows a progress indicator if not already shown. This does not have to be a progress bar and it depends on chosen stepper feedback types.
-     *
      * @param progressMessage optional progress message if supported by the selected types
      */
     public void showProgress(@NonNull String progressMessage) {
@@ -699,7 +619,6 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
     /**
      * Checks if there's an ongoing operation i.e. if {@link #showProgress(String)} was called and not followed by {@link #hideProgress()} yet.
-     *
      * @return true if in progress, false otherwise
      */
     public boolean isInProgress() {
@@ -708,29 +627,11 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
     /**
      * Sets the mask for the stepper feedback type.
-     *
      * @param feedbackTypeMask step feedback type mask, should contain one or more flags from {@link StepperFeedbackType}
      */
     public void setFeedbackType(int feedbackTypeMask) {
         mFeedbackTypeMask = feedbackTypeMask;
         mStepperFeedbackType = StepperFeedbackTypeFactory.createType(mFeedbackTypeMask, this);
-    }
-
-    /**
-     * @return An alpha value from 0 to 1.0f to be used for the faded out view if 'content_fade' stepper feedback is set. 0.5f by default.
-     */
-    @FloatRange(from = 0.0f, to = 1.0f)
-    public float getContentFadeAlpha() {
-        return mContentFadeAlpha;
-    }
-
-    /**
-     * @return Background res ID to be used for the overlay on top of the content
-     * if 'content_overlay' stepper feedback type is set. 0 if default background should be used.
-     */
-    @DrawableRes
-    public int getContentOverlayBackground() {
-        return mContentOverlayBackground;
     }
 
     @SuppressWarnings("RestrictedApi")
@@ -751,6 +652,7 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
 
         mPager.setOnTouchListener(new View.OnTouchListener() {
 
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 return true;
@@ -768,6 +670,11 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
         mStepperFeedbackType = StepperFeedbackTypeFactory.createType(mFeedbackTypeMask, this);
     }
 
+    public void setmBottomNavigationBackground(int color){
+        if (mBottomNavigationBackground != 0) {
+            mStepNavigation.setBackgroundColor(color);
+        }
+    }
     private void initNavigation() {
         if (mBottomNavigationBackground != 0) {
             mStepNavigation.setBackgroundResource(mBottomNavigationBackground);
@@ -781,9 +688,9 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
         setBackgroundIfPresent(mNextButtonBackground, mNextNavigationButton);
         setBackgroundIfPresent(mCompleteButtonBackground, mCompleteNavigationButton);
 
-        mBackNavigationButton.setOnClickListener(new OnBackClickListener());
-        mNextNavigationButton.setOnClickListener(new OnNextClickListener());
-        mCompleteNavigationButton.setOnClickListener(new OnCompleteClickListener());
+        mBackNavigationButton.setOnClickListener(mOnBackClickListener);
+        mNextNavigationButton.setOnClickListener(mOnNextClickListener);
+        mCompleteNavigationButton.setOnClickListener(mOnCompleteClickListener);
     }
 
     private void setCompoundDrawablesForNavigationButtons(@DrawableRes int backDrawableResId, @DrawableRes int nextDrawableResId) {
@@ -897,18 +804,8 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
                 mFeedbackTypeMask = a.getInt(R.styleable.StepperLayout_ms_stepperFeedbackType, StepperFeedbackType.NONE);
             }
 
-            if (a.hasValue(R.styleable.StepperLayout_ms_stepperFeedback_contentFadeAlpha)) {
-                mContentFadeAlpha = a.getFloat(R.styleable.StepperLayout_ms_stepperFeedback_contentFadeAlpha, AnimationUtil.ALPHA_HALF);
-            }
-
-            if (a.hasValue(R.styleable.StepperLayout_ms_stepperFeedback_contentOverlayBackground)) {
-                mContentOverlayBackground = a.getResourceId(R.styleable.StepperLayout_ms_stepperFeedback_contentOverlayBackground, 0);
-            }
-
             mShowErrorStateOnBackEnabled = a.getBoolean(R.styleable.StepperLayout_ms_showErrorStateOnBack, false);
             mShowErrorStateOnBackEnabled = a.getBoolean(R.styleable.StepperLayout_ms_showErrorStateOnBackEnabled, mShowErrorStateOnBackEnabled);
-
-            mShowErrorMessageEnabled = a.getBoolean(R.styleable.StepperLayout_ms_showErrorMessageEnabled, false);
 
             mTabNavigationEnabled = a.getBoolean(R.styleable.StepperLayout_ms_tabNavigationEnabled, true);
 
@@ -938,7 +835,7 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
     }
 
     private void updateErrorFlagWhenGoingBack() {
-        updateError(mShowErrorStateOnBackEnabled ? mStepperType.getErrorAtPosition(mCurrentStepPosition) : null);
+        updateErrorFlag(mShowErrorStateOnBackEnabled && mStepperType.getErrorAtPosition(mCurrentStepPosition));
     }
 
     @UiThread
@@ -970,12 +867,8 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
             result = true;
         }
 
-        updateError(verificationError);
+        updateErrorFlag(result);
         return result;
-    }
-
-    private void updateError(@Nullable VerificationError error) {
-        mStepperType.setError(mCurrentStepPosition, error);
     }
 
     private void onError(@NonNull VerificationError verificationError) {
@@ -1005,21 +898,18 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
         mPager.setCurrentItem(newStepPosition);
         final boolean isLast = isLastPosition(newStepPosition);
         final boolean isFirst = newStepPosition == 0;
-        final StepViewModel viewModel = mStepAdapter.getViewModel(newStepPosition);
-
-        int backButtonTargetVisibility = (isFirst && !mShowBackButtonOnFirstStep) || !viewModel.isBackButtonVisible() ? View.GONE : View.VISIBLE;
-        int nextButtonVisibility = isLast || !viewModel.isEndButtonVisible() ? View.GONE : View.VISIBLE;
-        int completeButtonVisibility = !isLast || !viewModel.isEndButtonVisible() ? View.GONE : View.VISIBLE;
-
-        AnimationUtil.fadeViewVisibility(mNextNavigationButton, nextButtonVisibility, userTriggeredChange);
-        AnimationUtil.fadeViewVisibility(mCompleteNavigationButton, completeButtonVisibility, userTriggeredChange);
+        AnimationUtil.fadeViewVisibility(mNextNavigationButton, isLast ? View.GONE : View.VISIBLE, userTriggeredChange);
+        AnimationUtil.fadeViewVisibility(mCompleteNavigationButton, !isLast ? View.GONE : View.VISIBLE, userTriggeredChange);
+        int backButtonTargetVisibility = isFirst && !mShowBackButtonOnFirstStep ? View.GONE : View.VISIBLE;
         AnimationUtil.fadeViewVisibility(mBackNavigationButton, backButtonTargetVisibility, userTriggeredChange);
+
+        final StepViewModel viewModel = mStepAdapter.getViewModel(newStepPosition);
 
         updateBackButton(viewModel);
 
-        updateEndButton(viewModel.getEndButtonLabel(),
-                isLast ? mCompleteButtonText : mNextButtonText,
-                isLast ? mCompleteNavigationButton : mNextNavigationButton);
+        if (!isLast) {
+            updateNextButton(viewModel);
+        }
 
         setCompoundDrawablesForNavigationButtons(viewModel.getBackButtonStartDrawableResId(), viewModel.getNextButtonEndDrawableResId());
 
@@ -1031,13 +921,12 @@ public class StepperLayout extends LinearLayout implements TabsContainer.TabItem
         }
     }
 
-    private void updateEndButton(@Nullable CharSequence endButtonTextForStep,
-                                 @Nullable CharSequence defaultEndButtonText,
-                                 @NonNull TextView endButton) {
-        if (endButtonTextForStep == null) {
-            endButton.setText(defaultEndButtonText);
+    private void updateNextButton(@NonNull StepViewModel viewModel) {
+        CharSequence nextButtonTextForStep = viewModel.getNextButtonLabel();
+        if (nextButtonTextForStep == null) {
+            mNextNavigationButton.setText(mNextButtonText);
         } else {
-            endButton.setText(endButtonTextForStep);
+            mNextNavigationButton.setText(nextButtonTextForStep);
         }
     }
 

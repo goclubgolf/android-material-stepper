@@ -13,12 +13,8 @@ import com.stepstone.stepper.viewmodel.StepViewModel
 class SampleFragmentStepAdapter(fm: FragmentManager, context: Context) : AbstractFragmentStepAdapter(fm, context) {
 
     override fun getViewModel(@IntRange(from = 0) position: Int): StepViewModel {
-        val builder = StepViewModel.Builder(context)
+        return StepViewModel.Builder(context)
                 .setTitle(R.string.tab_title)
-        if (position == 1) {
-            builder.setSubtitle("Optional")
-        }
-        return builder
                 .create()
     }
 
